@@ -12,6 +12,8 @@ use App\Models\ChannelWebhookConfig;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Fluent;
+use RuntimeException;
 
 class HandleFacebookWebhookController
 {
@@ -29,15 +31,13 @@ class HandleFacebookWebhookController
 
         $payload = $rawRequest->json()->all();
         $entries = $payload['entry'] ?? [];
-        $events = collect($entries)
-            ->map(fn (array $entry) => FacebookWebhookEvent::fromArray($entry))
-            ->all();
-
-        foreach ($events as $event) {
+        foreach ($entries as $event) {
             Log::info('facebook.webhook.event', $event->toArray());
+            $pageId = $event->id;
+            throw_if(!$pageId, new CustomException('Facebook page ID missing in webhook event.'));
             $config = ChannelWebhookConfig::query()
                 ->where('channel', 'facebook')
-                ->where('config->page_id', $event->pageId)
+                ->where('config->page_id', $pageId)
                 ->first();
 
             if (! $config) {
@@ -50,12 +50,19 @@ class HandleFacebookWebhookController
                 throw new CustomException('Facebook page access token missing.');
             }
 
+            $messages = $event['messaging'] ?? null;
+
+            if (! is_array($messages) || $messages === []) {
+                throw new RuntimeException('Invalid Facebook webhook payload: missing messaging array');
+            }
             $userWebsiteId = $config->user_website_id;
-            $customer = $upsertFacebookCustomerAction->execute($event, $userWebsiteId);
-            $conversation = $upsertFacebookConversationAction->execute($customer);
-            $createFacebookMessageAction->execute($conversation, $customer, $event);
+            foreach ($messages as $message) {
+                $customer = $upsertFacebookCustomerAction->execute($message, $userWebsiteId, $pageId);
+                $conversation = $upsertFacebookConversationAction->execute($customer);
+                $createFacebookMessageAction->execute($conversation, $customer, $message);
+            }
         }
 
-        return $this->responseSuccess(new FacebookWebhookResultResource(count($events)));
+        return $this->responseSuccess(new FacebookWebhookResultResource(count($entries)));
     }
 }
