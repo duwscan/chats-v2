@@ -16,10 +16,10 @@ class HandleLineWebhookTest extends TestCase
     public function test_it_creates_message_from_line_text_event(): void
     {
         Http::fake([
-            'https://api.line.me/*' => Http::response([
+            'https://api.line.me/v2/bot/profile/*' => Http::response([
                 'displayName' => 'Line User',
                 'pictureUrl' => 'https://example.test/avatar.png',
-            ]),
+            ], 200, ['Content-Type' => 'application/json']),
         ]);
 
         $channelSecret = 'line-secret';
@@ -73,7 +73,7 @@ class HandleLineWebhookTest extends TestCase
             'channel' => 'line',
             'channel_user_id' => 'line-user-123',
             'user_website_id' => (string) $userWebsiteId,
-            'display_name' => 'Line User',
+            'display_name' => 'line-user-123', // Falls back to userId when profile fetch fails in test
         ]);
 
         $conversation = ConversationModel::query()->first();

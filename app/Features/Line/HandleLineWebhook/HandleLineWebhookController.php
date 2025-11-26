@@ -3,17 +3,20 @@
 namespace App\Features\Line\HandleLineWebhook;
 
 use App\Exceptions\CustomException;
+use App\Features\Line\HandleLineWebhook\Actions\CreateLineAttachmentMessageAction;
 use App\Features\Line\HandleLineWebhook\Actions\CreateLineMessageAction;
 use App\Features\Line\HandleLineWebhook\Actions\UpsertLineConversationAction;
 use App\Features\Line\HandleLineWebhook\Actions\UpsertLineCustomerAction;
 use App\Features\Line\HandleLineWebhook\Actions\VerifyLineSignatureAction;
 use App\Features\Line\LineChannel;
 use App\Http\Controllers\ApiResponseTrait;
+use App\Http\Controllers\Controller;
 use App\Models\ChannelWebhookConfig;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use LINE\Webhook\Model\MessageEvent;
 
-class HandleLineWebhookController
+class HandleLineWebhookController extends Controller
 {
     use ApiResponseTrait;
 
@@ -23,6 +26,7 @@ class HandleLineWebhookController
         UpsertLineCustomerAction $upsertLineCustomerAction,
         UpsertLineConversationAction $upsertLineConversationAction,
         CreateLineMessageAction $createLineMessageAction,
+        CreateLineAttachmentMessageAction $createLineAttachmentMessageAction,
     ): JsonResponse {
         $userWebsiteId = $request->routeUserWebsiteId();
         $configId = $request->routeConfigId();
@@ -38,18 +42,46 @@ class HandleLineWebhookController
         }
 
         $channelConfig = LineChannel::fromArray($config->config ?? []);
-        $verifyLineSignatureAction->execute($request, $channelConfig->getClientSecret());
+        $sdkEvents = $verifyLineSignatureAction->execute($request, $channelConfig->getClientSecret());
 
-        $events = collect($request->json('events', []))
-            ->map(fn (array $event) => LineWebhookEvent::fromArray($event))
-            ->filter()
+        $events = collect($sdkEvents)
+            ->filter(fn ($event) => $event instanceof MessageEvent)
             ->values();
 
-        foreach ($events as $event) {
-            Log::info('line.webhook.event', $event->toArray());
-            $customer = $upsertLineCustomerAction->execute($event, $userWebsiteId, $channelConfig->getAccessToken());
-            $conversation = $upsertLineConversationAction->execute($customer);
-            $createLineMessageAction->execute($conversation, $customer, $event, $config->id);
+        if ($events->isEmpty()) {
+            Log::info('line.webhook.verification_request', [
+                'user_website_id' => $userWebsiteId,
+                'config_id' => $configId,
+            ]);
+        } else {
+            foreach ($events as $event) {
+                $message = $event->getMessage();
+                $messageType = $message->getType();
+
+                if (! in_array($messageType, ['text', 'image'], true)) {
+                    continue;
+                }
+
+                Log::info('line.webhook.event', [
+                    'type' => $messageType,
+                    'message_id' => $message->getId(),
+                ]);
+
+                $customer = $upsertLineCustomerAction->execute($event, $userWebsiteId, $channelConfig->getAccessToken());
+                $conversation = $upsertLineConversationAction->execute($customer);
+
+                if ($messageType === 'image') {
+                    $savedMessage = $createLineMessageAction->execute($conversation, $customer, $event, $config->id);
+                    $createLineAttachmentMessageAction->execute(
+                        $conversation,
+                        $savedMessage,
+                        $event,
+                        $channelConfig->getAccessToken(),
+                    );
+                } else {
+                    $createLineMessageAction->execute($conversation, $customer, $event, $config->id);
+                }
+            }
         }
 
         return $this->responseSuccess(new LineWebhookResultResource($events->count()));

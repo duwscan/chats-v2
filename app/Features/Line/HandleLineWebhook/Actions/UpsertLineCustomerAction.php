@@ -2,23 +2,27 @@
 
 namespace App\Features\Line\HandleLineWebhook\Actions;
 
-use App\Features\Line\HandleLineWebhook\LineWebhookEvent;
 use App\Models\CustomerModel;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use LINE\Clients\MessagingApi\Api\MessagingApiApi;
+use LINE\Clients\MessagingApi\Configuration;
+use LINE\Webhook\Model\MessageEvent;
 
 class UpsertLineCustomerAction
 {
-    public function execute(LineWebhookEvent $event, int $userWebsiteId, string $accessToken): CustomerModel
+    public function execute(MessageEvent $event, int $userWebsiteId, string $accessToken): CustomerModel
     {
+        $source = $event->getSource();
+        $userId = $source->getUserId();
+
         $customer = CustomerModel::query()->firstOrCreate(
             [
                 'channel' => 'line',
-                'channel_user_id' => $event->userId,
+                'channel_user_id' => $userId,
                 'user_website_id' => $userWebsiteId,
             ],
             [
-                'display_name' => $event->userId,
+                'display_name' => $userId,
                 'last_activity_at' => now(),
             ],
         );
@@ -31,7 +35,7 @@ class UpsertLineCustomerAction
             return $customer;
         }
 
-        $profile = $this->fetchProfile($event->userId, $accessToken);
+        $profile = $this->fetchProfile($userId, $accessToken);
         $customer->update(array_filter([
             'display_name' => $profile['display_name'] ?? $customer->display_name,
             'avatar_url' => $profile['avatar_url'] ?? null,
@@ -46,24 +50,24 @@ class UpsertLineCustomerAction
             return [];
         }
 
-        $response = Http::withToken($accessToken)
-            ->acceptJson()
-            ->get("https://api.line.me/v2/bot/profile/{$userId}");
+        try {
+            $config = new Configuration;
+            $config->setAccessToken($accessToken);
+            $messagingApi = new MessagingApiApi(config: $config);
 
-        if ($response->successful()) {
-            $data = $response->json() ?? [];
+            $userProfile = $messagingApi->getProfile($userId);
 
             return [
-                'display_name' => $data['displayName'] ?? null,
-                'avatar_url' => $data['pictureUrl'] ?? null,
+                'display_name' => $userProfile->getDisplayName(),
+                'avatar_url' => $userProfile->getPictureUrl(),
             ];
+        } catch (\Throwable $e) {
+            Log::warning('line.profile.fetch_failed', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
         }
-
-        Log::warning('line.profile.fetch_failed', [
-            'user_id' => $userId,
-            'status' => $response->status(),
-        ]);
-
-        return [];
     }
 }
