@@ -7,8 +7,10 @@ use App\Features\Facebook\SendFacebookMessage\Text\FacebookTextMessage;
 use App\Features\Facebook\SendFacebookMessage\Text\SendFacebookTextMessageAction;
 use App\Http\Controllers\ApiResponseTrait;
 use App\Models\CustomerModel;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 
+#[Group('Facebook Messaging')]
 class SendFacebookMessageController
 {
     use ApiResponseTrait;

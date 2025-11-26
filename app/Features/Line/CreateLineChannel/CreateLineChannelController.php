@@ -4,8 +4,10 @@ namespace App\Features\Line\CreateLineChannel;
 
 use App\Features\Line\LineChannelConfigResource;
 use App\Http\Controllers\ApiResponseTrait;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 
+#[Group('LINE Channels')]
 class CreateLineChannelController
 {
     use ApiResponseTrait;

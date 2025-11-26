@@ -7,8 +7,10 @@ use App\Features\Line\SendLineMessage\Text\SendLineTextMessageAction;
 use App\Features\Line\SendLineMessage\Text\SendLineTextMessageData;
 use App\Http\Controllers\ApiResponseTrait;
 use App\Models\CustomerModel;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 
+#[Group('LINE Messaging')]
 class SendLineMessageController
 {
     use ApiResponseTrait;

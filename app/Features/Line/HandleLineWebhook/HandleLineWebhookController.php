@@ -12,10 +12,12 @@ use App\Features\Line\LineChannel;
 use App\Http\Controllers\ApiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Models\ChannelWebhookConfig;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use LINE\Webhook\Model\MessageEvent;
 
+#[Group('LINE Webhooks')]
 class HandleLineWebhookController extends Controller
 {
     use ApiResponseTrait;

@@ -2,11 +2,21 @@
 
 namespace App\Features\Facebook\VerifyFacebookWebhook;
 
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+#[Group('Facebook Webhooks')]
 class VerifyFacebookWebhookController
 {
+    /**
+     * Verify Facebook webhook subscription.
+     * This endpoint is used by Facebook to verify webhook subscription during setup.
+     *
+     * @response string
+     *
+     * @status 200
+     */
     public function __invoke(Request $request)
     {
         if ($request->isMethod('GET')

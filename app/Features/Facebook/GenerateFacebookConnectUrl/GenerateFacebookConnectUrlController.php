@@ -3,8 +3,10 @@
 namespace App\Features\Facebook\GenerateFacebookConnectUrl;
 
 use App\Http\Controllers\ApiResponseTrait;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 
+#[Group('Facebook Channels')]
 class GenerateFacebookConnectUrlController
 {
     use ApiResponseTrait;

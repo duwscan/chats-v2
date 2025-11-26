@@ -11,11 +11,13 @@ use App\Features\Facebook\HandleWebhook\Actions\UpsertFacebookCustomerAction;
 use App\Features\Facebook\HandleWebhook\Actions\VerifyFacebookSignatureAction;
 use App\Http\Controllers\ApiResponseTrait;
 use App\Models\ChannelWebhookConfig;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
+#[Group('Facebook Webhooks')]
 class HandleFacebookWebhookController
 {
     use ApiResponseTrait;

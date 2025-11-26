@@ -3,9 +3,11 @@
 namespace App\Features\Facebook\CreateFacebookChannelOnCallback;
 
 use App\Http\Controllers\ApiResponseTrait;
+use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
+#[Group('Facebook Channels')]
 class FacebookCallbackController
 {
     use ApiResponseTrait;
