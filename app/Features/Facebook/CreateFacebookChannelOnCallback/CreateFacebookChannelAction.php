@@ -4,7 +4,7 @@ namespace App\Features\Facebook\CreateFacebookChannelOnCallback;
 
 use App\Exceptions\CustomException;
 use App\Features\Facebook\CreateFacebookChannelOnCallback\FacebookPage as FacebookPageDto;
-use App\Models\ChannelWebhookConfigModel;
+use App\Models\ChannelWebhookConfig;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 

@@ -93,7 +93,7 @@ trait ApiResponseTrait
         $data = $data->items();
     }
 
-    protected function responseFail(mixed $message = '', mixed $data = null, ?int $customStatus = null): JsonResponse
+    public function responseFail(mixed $message = '', mixed $data = null, ?int $customStatus = null): JsonResponse
     {
         if ($message instanceof ModelNotFoundException) {
             return $this->response(true, null, '404 - '.trans('error_http.404'), ResponseAlias::HTTP_NOT_FOUND);

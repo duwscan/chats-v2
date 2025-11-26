@@ -18,26 +18,12 @@ class HandleFacebookWebhookController
     use ApiResponseTrait;
 
     public function __invoke(
-        HandleFacebookWebhookRequest $request,
         Request $rawRequest,
         VerifyFacebookSignatureAction $verifyFacebookSignatureAction,
         UpsertFacebookCustomerAction $upsertFacebookCustomerAction,
         UpsertFacebookConversationAction $upsertFacebookConversationAction,
         CreateFacebookMessageAction $createFacebookMessageAction,
     ): JsonResponse {
-        $userWebsiteId = $request->routeUserWebsiteId();
-        $configId = $request->routeConfigId();
-
-        $config = ChannelWebhookConfig::query()
-            ->where('id', $configId)
-            ->where('user_website_id', $userWebsiteId)
-            ->where('channel', 'facebook')
-            ->first();
-
-        if (! $config) {
-            throw new CustomException('Facebook config not found.', 404);
-        }
-
         $appSecret = config('services.facebook.app_secret');
         $verifyFacebookSignatureAction->execute($rawRequest, $appSecret);
 
@@ -47,13 +33,24 @@ class HandleFacebookWebhookController
             ->map(fn (array $entry) => FacebookWebhookEvent::fromArray($entry))
             ->all();
 
-        $pageToken = $config->config['access_token'] ?? null;
-        if (! $pageToken) {
-            throw new CustomException('Facebook page access token missing.');
-        }
-
         foreach ($events as $event) {
             Log::info('facebook.webhook.event', $event->toArray());
+            $config = ChannelWebhookConfig::query()
+                ->where('channel', 'facebook')
+                ->where('config->page_id', $event->pageId)
+                ->first();
+
+            if (! $config) {
+                throw new CustomException('Facebook config not found.', 404);
+            }
+
+            $pageToken = $config->config['access_token'] ?? null;
+
+            if (! $pageToken) {
+                throw new CustomException('Facebook page access token missing.');
+            }
+
+            $userWebsiteId = $config->user_website_id;
             $customer = $upsertFacebookCustomerAction->execute($event, $userWebsiteId);
             $conversation = $upsertFacebookConversationAction->execute($customer);
             $createFacebookMessageAction->execute($conversation, $customer, $event);

@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('api')
     ->group(function (): void {
-        Route::post('webhook/facebook/{userWebsiteId}/{configId}', HandleFacebookWebhookController::class);
+        Route::post('webhook/facebook', HandleFacebookWebhookController::class);
     });

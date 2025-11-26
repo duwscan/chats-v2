@@ -7,7 +7,7 @@ use App\Models\CustomerModel;
 
 class UpsertFacebookCustomerAction
 {
-    public function execute(FacebookWebhookEvent $event, int $userWebsiteId): CustomerModel
+    public function execute(FacebookWebhookEvent $event, string $userWebsiteId): CustomerModel
     {
         return CustomerModel::query()->firstOrCreate(
             [

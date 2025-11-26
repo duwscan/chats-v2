@@ -19,6 +19,14 @@ class HandleLineWebhookRequest extends FormRequest
         ];
     }
 
+    public function validationData(): array
+    {
+        return array_merge(parent::validationData(), [
+            'userWebsiteId' => $this->route('userWebsiteId'),
+            'configId' => $this->route('configId'),
+        ]);
+    }
+
     public function routeUserWebsiteId(): int
     {
         return (int) $this->route('userWebsiteId');

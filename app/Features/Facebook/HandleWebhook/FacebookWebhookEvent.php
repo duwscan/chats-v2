@@ -2,17 +2,16 @@
 
 namespace App\Features\Facebook\HandleWebhook;
 
-class FacebookWebhookEvent
+readonly class FacebookWebhookEvent
 {
     public function __construct(
-        public readonly string $pageId,
-        public readonly string $senderId,
-        public readonly string $recipientId,
-        public readonly ?string $mid,
-        public readonly ?string $text,
-        public readonly array $attachments = [],
-    ) {
-    }
+        public string $pageId,
+        public string $senderId,
+        public string $recipientId,
+        public ?string $mid,
+        public ?string $text,
+        public array $attachments = [],
+    ) {}
 
     public static function fromArray(array $entry): self
     {

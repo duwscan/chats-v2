@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class LineWebhookResultResource extends JsonResource
 {
-    public function __construct(private readonly string $status)
+    public function __construct(private readonly int $processed)
     {
         parent::__construct(null);
     }
@@ -14,7 +14,8 @@ class LineWebhookResultResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'status' => $this->status,
+            'status' => 'ok',
+            'processed' => $this->processed,
         ];
     }
 }
