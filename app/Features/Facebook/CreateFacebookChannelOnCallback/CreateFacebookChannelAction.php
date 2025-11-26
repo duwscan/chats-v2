@@ -13,7 +13,7 @@ class CreateFacebookChannelAction
     public function __invoke(array $data): array
     {
         if (! empty($data['error'])) {
-            $description = $data['error_description'] ?? $data['error'] ?? 'Facebook OAuth error';
+            $description = $data['error_description'] ?? (string) $data['error'];
 
             throw new CustomException($description);
         }

@@ -1,172 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Offset ''error'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Features/Facebook/CreateFacebookChannelOnCallback/CreateFacebookChannelAction.php
-
-		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
 			path: app/Features/Facebook/HandleWebhook/Actions/CreateFacebookAttachmentMessageAction.php
 
 		-
-			message: '#^Parameter \#2 \$message of method App\\Features\\Facebook\\HandleWebhook\\Actions\\CreateFacebookAttachmentMessageAction\:\:execute\(\) expects App\\Models\\MessageModel, App\\Models\\CustomerModel given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Features/Facebook/HandleWebhook/HandleFacebookWebhookController.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Features/Facebook/SendFacebookMessage/Text/SendFacebookTextMessageAction.php
-
-		-
-			message: '#^Call to static method query\(\) on an unknown class App\\Models\\ChannelWebhookConfigModel\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Features/Line/CreateLineChannel/CreateLineChannelAction.php
-
-		-
-			message: '#^Method App\\Features\\Line\\CreateLineChannel\\CreateLineChannelAction\:\:execute\(\) has invalid return type App\\Models\\ChannelWebhookConfigModel\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Features/Line/CreateLineChannel/CreateLineChannelAction.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Features/Line/HandleLineWebhook/Actions/CreateLineAttachmentMessageAction.php
-
-		-
-			message: '#^Call to an undefined method LINE\\Webhook\\Model\\Source\:\:getUserId\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Features/Line/HandleLineWebhook/Actions/CreateLineMessageAction.php
-
-		-
-			message: '#^Call to function method_exists\(\) with LINE\\Webhook\\Model\\ImageMessageContent\|LINE\\Webhook\\Model\\TextMessageContent and ''jsonSerialize'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Features/Line/HandleLineWebhook/Actions/CreateLineMessageAction.php
-
-		-
-			message: '#^Call to an undefined method LINE\\Webhook\\Model\\Source\:\:getUserId\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Features/Line/HandleLineWebhook/Actions/UpsertLineCustomerAction.php
-
-		-
-			message: '#^Access to an undefined property App\\Features\\Line\\LineChannelConfigResource\:\:\$channel\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Features/Line/LineChannelConfigResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Features\\Line\\LineChannelConfigResource\:\:\$config\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Features/Line/LineChannelConfigResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Features\\Line\\LineChannelConfigResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Features/Line/LineChannelConfigResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Features\\Line\\LineChannelConfigResource\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Features/Line/LineChannelConfigResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Features\\Line\\LineChannelConfigResource\:\:\$user_website_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Features/Line/LineChannelConfigResource.php
-
-		-
-			message: '#^Call to static method new\(\) on an unknown class Database\\Factories\\AgentFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/AgentModel.php
-
-		-
-			message: '#^PHPDoc type mixed of property App\\Models\\AgentModel\:\:\$table is not covariant with PHPDoc type string\|null of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$table\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/AgentModel.php
-
-		-
-			message: '#^Access to constant ACCEPTED on an unknown class App\\Enums\\AgentRequestResponseStatus\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Models/AgentRequestHistoryModel.php
-
-		-
-			message: '#^Access to constant PENDING on an unknown class App\\Enums\\AgentRequestResponseStatus\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Models/AgentRequestHistoryModel.php
-
-		-
-			message: '#^Access to constant REJECTED on an unknown class App\\Enums\\AgentRequestResponseStatus\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Models/AgentRequestHistoryModel.php
-
-		-
-			message: '#^Class App\\Enums\\AgentRequestResponseStatus not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/AgentRequestHistoryModel.php
-
-		-
-			message: '#^Class App\\Enums\\AgentRequestType not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/AgentRequestHistoryModel.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\ApiKey\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/ApiKey.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Attachment\:\:\$size_in_bytes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Attachment\:\:\$storage_disk\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Attachment\:\:\$stored_path\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Attachment\:\:\$visibility\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Attachment.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$expiration \(int\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Models/Attachment.php
 
 		-
 			message: '#^Call to static method new\(\) on an unknown class Database\\Factories\\AttachmentFactory\.$#'
@@ -201,7 +45,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Models/FcmTokenModel.php
 
 		-
@@ -217,61 +61,7 @@ parameters:
 			path: app/Models/Payment.php
 
 		-
-			message: '#^Access to constant EXPRIED on an unknown class App\\Enums\\PaymentStatus\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/Payment.php
-
-		-
-			message: '#^Instantiated class App\\Builder\\QuotaIntervalBuilder not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/QuotaInterval.php
-
-		-
-			message: '#^Method App\\Models\\QuotaInterval\:\:newEloquentBuilder\(\) has invalid return type App\\Builder\\QuotaIntervalBuilder\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/QuotaInterval.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Role\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Role.php
-
-		-
-			message: '#^Access to constant ROLE_ADMIN on an unknown class App\\Utilities\\Acl\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Models/Role.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SePayTransaction\:\:\$referenceCode\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/SePayTransaction.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SePayTransaction\:\:\$transferAmount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/SePayTransaction.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Subscription\:\:\$ended_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Subscription.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:quotaInterval\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/Models/UserWebsite.php
-
-		-
-			message: '#^Method App\\Models\\UserWebsite\:\:getFeatureUsage\(\) should return App\\Models\\FeatureUsage but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Models/UserWebsite.php

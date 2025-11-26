@@ -12,7 +12,7 @@ class AgentModel extends Model
     use HasFactory;
 
     /**
-     * @var \Illuminate\Support\HigherOrderCollectionProxy|mixed|null
+     * @var string
      */
     protected $table = 'agents';
 

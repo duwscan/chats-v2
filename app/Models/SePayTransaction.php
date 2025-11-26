@@ -5,8 +5,13 @@ namespace App\Models;
 use App\Utilities\Transactionable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+
 // use SePay\SePay\Models\SePayTransaction as SePayTransactionPackageModel;
 
+/**
+ * @property string|null $referenceCode
+ * @property int|null $transferAmount
+ */
 class SePayTransaction extends Model implements Transactionable
 {
     protected $fillable = [
@@ -20,10 +25,11 @@ class SePayTransaction extends Model implements Transactionable
         'description',
         'transferAmount',
         'referenceCode',
-        'webhook_id'
+        'webhook_id',
     ];
 
-    protected $table = "sepay_transactions";
+    protected $table = 'sepay_transactions';
+
     public function transaction(): MorphOne
     {
         return $this->morphOne(Transaction::class, 'transactionable');
@@ -42,7 +48,7 @@ class SePayTransaction extends Model implements Transactionable
     public function getTransactionType(): string
     {
         return $this->getMorphClass();
-}
+    }
 
     public function getTransactionCode(): ?string
     {

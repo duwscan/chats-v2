@@ -2,8 +2,12 @@
 
 namespace App\Features\Line;
 
+use App\Models\ChannelWebhookConfig;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin ChannelWebhookConfig
+ */
 class LineChannelConfigResource extends JsonResource
 {
     public function toArray($request): array

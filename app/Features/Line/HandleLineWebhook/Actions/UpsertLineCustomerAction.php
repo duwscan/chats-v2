@@ -2,19 +2,27 @@
 
 namespace App\Features\Line\HandleLineWebhook\Actions;
 
+use App\Exceptions\CustomException;
 use App\Models\ChannelWebhookConfig;
 use App\Models\CustomerModel;
 use Illuminate\Support\Facades\Log;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
 use LINE\Webhook\Model\MessageEvent;
+use LINE\Webhook\Model\UserSource;
 
 class UpsertLineCustomerAction
 {
     public function execute(MessageEvent $event, int $userWebsiteId, string $accessToken, ?ChannelWebhookConfig $config = null): CustomerModel
     {
         $source = $event->getSource();
+        if (! $source instanceof UserSource) {
+            throw new CustomException('LINE message source must be a user source');
+        }
         $userId = $source->getUserId();
+        if ($userId === null) {
+            throw new CustomException('LINE user ID is missing');
+        }
 
         $customer = CustomerModel::query()->firstOrCreate(
             [

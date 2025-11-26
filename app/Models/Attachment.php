@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * @property string|null $size_in_bytes
+ * @property string|null $storage_disk
+ * @property string|null $stored_path
+ * @property string|null $visibility
+ */
 class Attachment extends Model
 {
     use SoftDeletes;
@@ -23,7 +29,7 @@ class Attachment extends Model
         'additional_metadata',
         'hash_checksum',
         'attachable_id',
-        'attachable_type'
+        'attachable_type',
     ];
 
     // Các trường sẽ tự động được cast
@@ -55,11 +61,13 @@ class Attachment extends Model
         if ($this->isPublic() && $this->storage_disk === 'public') {
             $path = Str::startsWith($this->stored_path, '/')
                 ? $this->stored_path
-                : '/' . $this->stored_path;
-            return asset('storage' . $path);
+                : '/'.$this->stored_path;
+
+            return asset('storage'.$path);
         } elseif ($this->storage_disk === 'Wasabi') {
             return Storage::disk('Wasabi')->url($this->stored_path);
         }
+
         return null;
     }
 
@@ -68,14 +76,14 @@ class Attachment extends Model
      */
     public function getReadableSize()
     {
-        $size  = $this->size_in_bytes;
+        $size = $this->size_in_bytes;
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         for ($i = 0; $size >= 1024 && $i < count($units) - 1; $i++) {
             $size /= 1024;
         }
 
-        return round($size, 2) . ' ' . $units[$i];
+        return round($size, 2).' '.$units[$i];
     }
 
     public function getAttachmentPageContent()
@@ -84,14 +92,16 @@ class Attachment extends Model
         if ($url) {
             return file_get_contents($url);
         }
+
         return '';
     }
 
-    public function getTemporaryUrl(int $expiration = null)
+    public function getTemporaryUrl(?int $expiration = null)
     {
         if ($expiration === null) {
             $expiration = config('filesystems.page_content_temporary_url_expiration_time');
         }
+
         return Storage::disk($this->storage_disk)->temporaryUrl(
             $this->stored_path, now()->addMinutes($expiration)
         );

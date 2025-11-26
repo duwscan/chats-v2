@@ -3,14 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 
 class UserWebsite extends Model implements AuthorizableContract
 {
@@ -63,8 +60,8 @@ class UserWebsite extends Model implements AuthorizableContract
 
     public function getFeatureUsage(
         string $feature
-    ): FeatureUsage
-    {
+    ): FeatureUsage {
+        /** @var FeatureUsage */
         return $this->featureUsages()->whereHas('quotaInterval.planFeature.feature', function ($query) use ($feature) {
             $query->where('name', $feature);
         })->firstOrFail();
@@ -72,8 +69,7 @@ class UserWebsite extends Model implements AuthorizableContract
 
     public function planFeaturesQuotaInterval(
         string $feature
-    )
-    {
+    ) {
         return $this->featureUsages()->whereHas('quotaInterval.planFeature.feature', function ($query) use ($feature) {
             $query->where('name', $feature);
         })->firstOrFail()->quotaInterval()->firstOrFail();

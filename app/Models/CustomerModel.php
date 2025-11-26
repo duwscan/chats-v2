@@ -116,6 +116,9 @@ class CustomerModel extends Model
     }
 
     // Helper methods for notifications
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
     public function unreadNotifications()
     {
         return $this->notifications()->unread();

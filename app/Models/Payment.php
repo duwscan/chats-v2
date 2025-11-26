@@ -52,10 +52,11 @@ class Payment extends Model
 
     public function isExpired(): bool
     {
-        return $this->status === PaymentStatus::EXPRIED;
+        return $this->status === PaymentStatus::EXPIRED;
     }
 
-    public function transactions() : HasMany{
+    public function transactions(): HasMany
+    {
         return $this->hasMany(Transaction::class);
     }
 }

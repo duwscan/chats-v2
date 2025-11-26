@@ -52,9 +52,12 @@ class FcmTokenModel extends Model
                 ->lockForUpdate()
                 ->delete();
 
+            /** @var int|string $modelId */
+            $modelId = $model->getKey();
+
             return static::create([
                 'tokenable_type' => get_class($model),
-                'tokenable_id' => $model->id,
+                'tokenable_id' => $modelId,
                 'token' => $token,
                 'device_id' => $deviceId,
                 'app_version' => $appVersion,

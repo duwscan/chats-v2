@@ -9,6 +9,7 @@ use App\Models\MessageModel;
 use LINE\Webhook\Model\ImageMessageContent;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\TextMessageContent;
+use LINE\Webhook\Model\UserSource;
 
 class CreateLineMessageAction
 {
@@ -32,11 +33,16 @@ class CreateLineMessageAction
             throw new CustomException('Unsupported LINE message type: '.$messageType);
         }
 
+        $userId = $source instanceof UserSource ? $source->getUserId() : null;
+        if ($userId === null) {
+            throw new CustomException('LINE message source must be a user source');
+        }
+
         $metadata = array_filter([
             'reply_token' => $event->getReplyToken(),
             'line_message_type' => $messageType,
             'config_id' => $configId,
-            'raw_message' => method_exists($message, 'jsonSerialize') ? (array) $message->jsonSerialize() : [],
+            'raw_message' => (array) $message->jsonSerialize(),
         ], fn ($value) => $value !== null);
 
         return MessageModel::query()->create([
@@ -45,7 +51,7 @@ class CreateLineMessageAction
             'message_text' => $messageText,
             'message_type' => $dbMessageType,
             'channel' => 'line',
-            'channel_conversation_id' => $source->getUserId(),
+            'channel_conversation_id' => $userId,
             'metadata' => $metadata,
             'thread_id' => $message->getId(),
         ]);

@@ -27,7 +27,7 @@ class CreateFacebookAttachmentMessageAction
         foreach ($attachments as $att) {
             try {
                 $payload = $att['payload'] ?? [];
-                $remoteUrl = $payload['url'] ?? null;
+                $remoteUrl = isset($payload['url']) ? (string) $payload['url'] : null;
 
                 if (! $remoteUrl) {
                     Log::warning('facebook.attachment.no_url', [

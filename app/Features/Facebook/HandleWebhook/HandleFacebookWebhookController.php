@@ -81,10 +81,9 @@ class HandleFacebookWebhookController
                 $messageDto = $extractFacebookMessageAction->execute($message, (string) $pageId);
                 $customer = $upsertFacebookCustomerAction->execute($messageDto, $userWebsiteId, $config);
                 $conversation = $upsertFacebookConversationAction->execute($customer);
+                $message = $createFacebookMessageAction->execute($conversation, $customer, $messageDto);
                 if ($messageDto->isAttachment()) {
-                    $createFacebookAttachmentMessageAction->execute($conversation, $customer, $messageDto);
-                } else {
-                    $createFacebookMessageAction->execute($conversation, $customer, $messageDto);
+                    $createFacebookAttachmentMessageAction->execute($conversation, $message, $messageDto);
                 }
             }
         }

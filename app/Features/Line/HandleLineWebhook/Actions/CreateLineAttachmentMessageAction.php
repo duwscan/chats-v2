@@ -60,7 +60,7 @@ class CreateLineAttachmentMessageAction
             }
 
             $contents = $response->body();
-            $mimeType = $response->header('Content-Type') ?? null;
+            $mimeType = $response->header('Content-Type');
 
             $extension = $mimeType && str_contains($mimeType, '/')
                 ? explode('/', $mimeType, 2)[1]
