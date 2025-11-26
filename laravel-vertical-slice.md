@@ -56,18 +56,26 @@ This hybrid structure separates the application's "actions" (Features) from its 
 *   **`app/Features/{UseCase}`**: A standard Vertical Slice containing the logic for a specific action. It is allowed to depend on any model in `app/Models` and any code in `app/Features/Common`.
 *   **`app/Models`**: The traditional Laravel directory for all Eloquent Models. These models are considered a global, shared resource for all features.
 
-### 3. Rules for Inter-Slice Communication
+### 3. Controller & Action Rules
 
-*   **Rule #3: No Direct Calls Between Standard Features.**
+*   **Rule #3: Controllers Orchestrate, Actions Execute.**
+    *   Controller trong từng slice chịu trách nhiệm **điều phối** luồng xử lý (gọi nhiều Action, xử lý thứ tự, branching theo điều kiện, v.v.).
+    *   Mỗi Action chỉ tập trung vào **một nhiệm vụ nhỏ, rõ ràng** (validation riêng, upsert model, tạo message, lưu attachment, v.v.).
+    *   **Action không được gọi trực tiếp Action khác**. Nếu cần nhiều bước, controller sẽ lần lượt gọi từng Action.
+    *   Những thứ dùng chung nhiều slice (DTO, helper, base action, v.v.) nên được đặt ở `app/Features/Common`.
+
+### 4. Rules for Inter-Slice Communication
+
+*   **Rule #4: No Direct Calls Between Standard Features.**
     *   `CreateProduct` is **STRICTLY FORBIDDEN** from directly calling code in `ProcessPayment`.
 
-*   **Rule #4: Communicate via Shared Kernel Events.**
+*   **Rule #5: Communicate via Shared Kernel Events.**
     *   When features need to interact, they do so by dispatching events that live in `app/Features/Common`.
     *   **Example:** `ProcessPayment` dispatches `App\Features\Common\Events\PaymentProcessed`. The `SendInvoice` feature has a listener that subscribes to this event.
 
-### 4. Configuration and Autoloading
+### 5. Configuration and Autoloading
 
-*   **Rule #5: `composer.json` Configuration.**
+*   **Rule #6: `composer.json` Configuration.**
     *   The `psr-4` configuration remains simple. The default `App\` namespace covers `app/Models`, and `App\Features\` covers all feature slices, including `Common`.
 
     ```json
@@ -83,7 +91,7 @@ This hybrid structure separates the application's "actions" (Features) from its 
     ```
     *   After editing, always run: `composer dump-autoload`.
 
-*   **Rule #6: Centralize Route Registration.**
+*   **Rule #7: Centralize Route Registration.**
     *   The `RouteServiceProvider` should be configured to scan and load all `routes.php` files from the feature directories (excluding `Common`).
 
     ```php
@@ -109,9 +117,9 @@ This hybrid structure separates the application's "actions" (Features) from its 
     }
     ```
 
-### 5. Testing
+### 6. Testing
 
-*   **Rule #7: Co-locate Tests with Features.**
+*   **Rule #8: Co-locate Tests with Features.**
     *   Test files for a slice **must** be placed inside the feature's own `Tests` folder.
     *   Example: `app/Features/CreateProduct/Tests/CreateProductTest.php`.
 

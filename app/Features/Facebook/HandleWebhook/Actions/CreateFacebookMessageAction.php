@@ -2,6 +2,7 @@
 
 namespace App\Features\Facebook\HandleWebhook\Actions;
 
+use App\Features\Facebook\HandleWebhook\FacebookWebhookMessage;
 use App\Models\ConversationModel;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
@@ -9,50 +10,31 @@ use RuntimeException;
 
 class CreateFacebookMessageAction
 {
-    public function execute(ConversationModel $conversation, CustomerModel $customer, array $message, bool $isPageEcho): void
+    public function execute(ConversationModel $conversation, CustomerModel $customer, FacebookWebhookMessage $message): MessageModel
     {
-        $type = 'unknown';
-
-        if (! empty($message['message']['text'])) {
-            $type = 'text';
+        if ($message->messageType === 'unknown') {
+            throw new RuntimeException('Unsupported Facebook message type: '.$message->messageType);
         }
 
-        if (! empty($message['message']['attachments'])) {
-            $type = 'attachment';
+        $existingMessage = MessageModel::query()
+            ->where('channel', 'facebook')
+            ->where('channel_conversation_id', $message->mid)
+            ->first();
+
+        throw_if($existingMessage, new RuntimeException('Already handled message with mid: '.$message->mid));
+
+        $data = [
+            'conversation_id' => $conversation->id,
+            'message_type' => $message->messageType,
+            'message_text' => $message->text,
+            'channel' => 'facebook',
+            'channel_conversation_id' => $message->mid,
+        ];
+
+        if (! $message->isPageEcho) {
+            $data['customer_id'] = $customer->id;
         }
 
-        $mid = $message['message']['mid'] ?? null;
-        if($type == 'text') {
-            $content = $message['message']['text'];
-            $messageModel = MessageModel::query()
-                ->where('channel', 'facebook')
-                ->where('channel_conversation_id', $mid)
-                ->first();
-            throw_if($messageModel, new RuntimeException('Already handled message with mid: '.$message['message']['mid']));
-            if(!$isPageEcho) {
-                MessageModel::create([
-                    "conversation_id" => $conversation->id,
-                    "customer_id" => $customer->id,
-                    "message_type" => $type,
-                    "message_text" => $content,
-                    "channel" => 'facebook',
-                    "channel_conversation_id" => $mid,
-                ]);
-            } else {
-                MessageModel::create([
-                    "conversation_id" => $conversation->id,
-                    "message_type" => $type,
-                    "message_text" => $content,
-                    "channel" => 'facebook',
-                    "channel_conversation_id" => $mid,
-                ]);
-            }
-        }
-//        TODO: handle image
+        return MessageModel::query()->create($data);
     }
-
-
-
-
-
 }

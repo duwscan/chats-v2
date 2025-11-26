@@ -3,7 +3,9 @@
 namespace App\Features\Facebook\HandleWebhook;
 
 use App\Exceptions\CustomException;
+use App\Features\Facebook\HandleWebhook\Actions\CreateFacebookAttachmentMessageAction;
 use App\Features\Facebook\HandleWebhook\Actions\CreateFacebookMessageAction;
+use App\Features\Facebook\HandleWebhook\Actions\ExtractFacebookMessageAction;
 use App\Features\Facebook\HandleWebhook\Actions\UpsertFacebookConversationAction;
 use App\Features\Facebook\HandleWebhook\Actions\UpsertFacebookCustomerAction;
 use App\Features\Facebook\HandleWebhook\Actions\VerifyFacebookSignatureAction;
@@ -12,7 +14,6 @@ use App\Models\ChannelWebhookConfig;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Fluent;
 use RuntimeException;
 
 class HandleFacebookWebhookController
@@ -22,9 +23,11 @@ class HandleFacebookWebhookController
     public function __invoke(
         Request $rawRequest,
         VerifyFacebookSignatureAction $verifyFacebookSignatureAction,
+        ExtractFacebookMessageAction $extractFacebookMessageAction,
         UpsertFacebookCustomerAction $upsertFacebookCustomerAction,
         UpsertFacebookConversationAction $upsertFacebookConversationAction,
         CreateFacebookMessageAction $createFacebookMessageAction,
+        CreateFacebookAttachmentMessageAction $createFacebookAttachmentMessageAction,
     ): JsonResponse {
         $appSecret = config('services.facebook.app_secret');
         $verifyFacebookSignatureAction->execute($rawRequest, $appSecret);
@@ -32,9 +35,14 @@ class HandleFacebookWebhookController
         $payload = $rawRequest->json()->all();
         $entries = $payload['entry'] ?? [];
         foreach ($entries as $event) {
-            Log::info('facebook.webhook.event', $event->toArray());
-            $pageId = $event->id;
-            throw_if(!$pageId, new CustomException('Facebook page ID missing in webhook event.'));
+            if (! is_array($event)) {
+                continue;
+            }
+
+            Log::info('facebook.webhook.event', $event);
+
+            $pageId = $event['id'] ?? null;
+            throw_if(! $pageId, new CustomException('Facebook page ID missing in webhook event.'));
             $config = ChannelWebhookConfig::query()
                 ->where('channel', 'facebook')
                 ->where('config->page_id', $pageId)
@@ -57,9 +65,18 @@ class HandleFacebookWebhookController
             }
             $userWebsiteId = $config->user_website_id;
             foreach ($messages as $message) {
-                $customer = $upsertFacebookCustomerAction->execute($message, $userWebsiteId, $pageId);
+                if (! is_array($message)) {
+                    continue;
+                }
+
+                $messageDto = $extractFacebookMessageAction->execute($message, (string) $pageId);
+                $customer = $upsertFacebookCustomerAction->execute($messageDto, $userWebsiteId);
                 $conversation = $upsertFacebookConversationAction->execute($customer);
-                $createFacebookMessageAction->execute($conversation, $customer, $message);
+                if ($messageDto->isAttachment()) {
+                    $createFacebookAttachmentMessageAction->execute($conversation, $customer, $messageDto);
+                } else {
+                    $createFacebookMessageAction->execute($conversation, $customer, $messageDto);
+                }
             }
         }
 

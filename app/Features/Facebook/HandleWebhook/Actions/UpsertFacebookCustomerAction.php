@@ -2,24 +2,21 @@
 
 namespace App\Features\Facebook\HandleWebhook\Actions;
 
+use App\Features\Facebook\HandleWebhook\FacebookWebhookMessage;
 use App\Models\CustomerModel;
 
 class UpsertFacebookCustomerAction
 {
-    public function execute(array $message, string $userWebsiteId, string $pageId): CustomerModel
+    public function execute(FacebookWebhookMessage $message, string $userWebsiteId): CustomerModel
     {
-        $sender = $message['sender']['id'] ?? null;
-        $recipient = $message['recipient']['id'] ?? null;
-        $isPageEcho = $sender === $pageId || ($message['message']['is_echo'] ?? false) === true;
-        $customerExternalId = $isPageEcho ? $recipient : $sender;
         return CustomerModel::query()->firstOrCreate(
             [
                 'channel' => 'facebook',
-                'channel_user_id' => $customerExternalId,
+                'channel_user_id' => $message->customerExternalId,
                 'user_website_id' => $userWebsiteId,
             ],
             [
-                'display_name' => "Facebook User",
+                'display_name' => 'Facebook User',
                 'last_activity_at' => now(),
             ],
         );
