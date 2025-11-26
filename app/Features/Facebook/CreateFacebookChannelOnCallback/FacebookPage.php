@@ -5,7 +5,9 @@ namespace App\Features\Facebook\CreateFacebookChannelOnCallback;
 class FacebookPage
 {
     private string $pageId;
+
     private string $pageName;
+
     private string $accessToken;
 
     public function __construct(string $pageId, string $pageName, string $accessToken)

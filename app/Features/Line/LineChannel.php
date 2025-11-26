@@ -7,8 +7,11 @@ use InvalidArgumentException;
 class LineChannel
 {
     private string $client_id;
+
     private string $client_secret;
+
     private string $access_token;
+
     private ?string $channel_name;
 
     public function __construct(string $client_id, string $client_secret, string $access_token, ?string $channel_name = null)
@@ -23,16 +26,13 @@ class LineChannel
      * Create a LineChannel from an array.
      * Required keys: client_id, client_secret, access_token
      * Optional: channel_name
-     *
-     * @param  array  $data
-     * @return self
      */
     public static function fromArray(array $data): self
     {
         $required = ['client_id', 'client_secret', 'access_token'];
 
         foreach ($required as $key) {
-            if (!isset($data[$key]) || $data[$key] === '') {
+            if (! isset($data[$key]) || $data[$key] === '') {
                 throw new InvalidArgumentException(sprintf('Missing required key "%s" when creating %s', $key, self::class));
             }
         }

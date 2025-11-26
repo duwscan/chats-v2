@@ -14,6 +14,7 @@ class GenerateFacebookConnectUrlRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // The ID of the user website to generate OAuth URL for.
             'userWebsiteId' => ['required', 'integer', 'min:1'],
         ];
     }

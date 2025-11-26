@@ -20,6 +20,13 @@ class HandleLineWebhookController extends Controller
 {
     use ApiResponseTrait;
 
+    /**
+     * Handle incoming LINE webhook events.
+     *
+     * @response LineWebhookResultResource
+     *
+     * @status 200
+     */
     public function __invoke(
         HandleLineWebhookRequest $request,
         VerifyLineSignatureAction $verifyLineSignatureAction,

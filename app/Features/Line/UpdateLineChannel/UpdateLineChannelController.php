@@ -10,6 +10,13 @@ class UpdateLineChannelController
 {
     use ApiResponseTrait;
 
+    /**
+     * Update an existing LINE channel configuration.
+     *
+     * @response LineChannelConfigResource
+     *
+     * @status 200
+     */
     public function __invoke(
         UpdateLineChannelConfigRequest $request,
         UpdateLineChannelAction $action,

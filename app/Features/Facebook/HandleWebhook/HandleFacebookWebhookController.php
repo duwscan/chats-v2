@@ -20,6 +20,13 @@ class HandleFacebookWebhookController
 {
     use ApiResponseTrait;
 
+    /**
+     * Handle incoming Facebook webhook events.
+     *
+     * @response FacebookWebhookResultResource
+     *
+     * @status 200
+     */
     public function __invoke(
         Request $rawRequest,
         VerifyFacebookSignatureAction $verifyFacebookSignatureAction,

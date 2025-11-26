@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class FacebookCallbackResource extends JsonResource
 {
     /**
-     * @param array{access_token:string,pages:FacebookPage[]} $payload
+     * @param  array{access_token:string,pages:FacebookPage[]}  $payload
      */
     public function __construct(private readonly array $payload)
     {

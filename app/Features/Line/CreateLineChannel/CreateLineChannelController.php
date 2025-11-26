@@ -10,6 +10,13 @@ class CreateLineChannelController
 {
     use ApiResponseTrait;
 
+    /**
+     * Create a new LINE channel configuration.
+     *
+     * @response LineChannelConfigResource
+     *
+     * @status 200
+     */
     public function __invoke(
         CreateLineChannelRequest $request,
         CreateLineChannelAction $action,

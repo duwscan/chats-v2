@@ -9,6 +9,13 @@ class GenerateFacebookConnectUrlController
 {
     use ApiResponseTrait;
 
+    /**
+     * Generate Facebook OAuth connect URL for a user website.
+     *
+     * @response FacebookAuthUrlResource
+     *
+     * @status 200
+     */
     public function __invoke(
         GenerateFacebookConnectUrlRequest $request,
         GenerateFacebookConnectUrlAction $action,

@@ -13,6 +13,13 @@ class SendFacebookMessageController
 {
     use ApiResponseTrait;
 
+    /**
+     * Send a Facebook message to a customer.
+     *
+     * @response SendFacebookMessageResultResource
+     *
+     * @status 200
+     */
     public function __invoke(
         SendFacebookMessageRequest $request,
         SendFacebookTextMessageAction $textAction,

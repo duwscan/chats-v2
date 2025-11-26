@@ -14,7 +14,9 @@ class HandleLineWebhookRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // The ID of the user website this webhook belongs to.
             'userWebsiteId' => ['required', 'integer', 'min:1'],
+            // The ID of the LINE channel webhook configuration.
             'configId' => ['required', 'integer', 'min:1'],
         ];
     }

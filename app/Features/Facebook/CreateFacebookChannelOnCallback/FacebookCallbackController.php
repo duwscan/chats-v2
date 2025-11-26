@@ -2,7 +2,6 @@
 
 namespace App\Features\Facebook\CreateFacebookChannelOnCallback;
 
-use App\Features\Facebook\CreateFacebookChannelOnCallback\FacebookCallbackResource;
 use App\Http\Controllers\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +10,13 @@ class FacebookCallbackController
 {
     use ApiResponseTrait;
 
+    /**
+     * Handle Facebook OAuth callback and create channel configuration.
+     *
+     * @response FacebookCallbackResource
+     *
+     * @status 200
+     */
     public function __invoke(
         HandleFacebookCallbackRequest $request,
         CreateFacebookChannelAction $action,

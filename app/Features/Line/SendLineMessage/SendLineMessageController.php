@@ -13,6 +13,13 @@ class SendLineMessageController
 {
     use ApiResponseTrait;
 
+    /**
+     * Send a LINE message to a customer.
+     *
+     * @response SendLineMessageResultResource
+     *
+     * @status 200
+     */
     public function __invoke(
         SendLineMessageRequest $request,
         SendLineTextMessageAction $sendLineTextMessageAction,
