@@ -2,12 +2,11 @@
 
 namespace App\Features\Line\CreateLineChannel;
 
-
 use App\Models\ChannelWebhookConfigModel;
 
 class CreateLineChannelAction
 {
-    public function __invoke(array $data): ChannelWebhookConfigModel
+    public function execute(array $data): ChannelWebhookConfigModel
     {
         return ChannelWebhookConfigModel::query()->updateOrCreate(
             [

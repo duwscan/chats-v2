@@ -12,9 +12,9 @@ class CreateLineChannelController
 
     public function __invoke(
         CreateLineChannelRequest $request,
-        CreateLineChannelAction  $action,
+        CreateLineChannelAction $action,
     ): JsonResponse {
-        $config = $action($request->validated());
+        $config = $action->execute($request->validated());
 
         return $this->responseSuccess(new LineChannelConfigResource($config));
     }

@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('channel_webhook_configs', function (Blueprint $table) {
-            $table->json('config')->nullable();
-            $table->dropMorphs('config');
-        });
+        if (! Schema::hasColumn('channel_webhook_configs', 'config')) {
+            Schema::table('channel_webhook_configs', function (Blueprint $table) {
+                $table->json('config')->nullable();
+            });
+        }
+
+        if (Schema::hasColumn('channel_webhook_configs', 'config_type') || Schema::hasColumn('channel_webhook_configs', 'config_id')) {
+            Schema::table('channel_webhook_configs', function (Blueprint $table) {
+                $table->dropMorphs('config');
+            });
+        }
     }
 
     /**
@@ -22,9 +29,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('channel_webhook_configs', function (Blueprint $table) {
-            $table->dropColumn('config');
-            $table->morphs('config');
-        });
+        if (Schema::hasColumn('channel_webhook_configs', 'config')) {
+            Schema::table('channel_webhook_configs', function (Blueprint $table) {
+                $table->dropColumn('config');
+            });
+        }
+
+        if (! Schema::hasColumn('channel_webhook_configs', 'config_type') && ! Schema::hasColumn('channel_webhook_configs', 'config_id')) {
+            Schema::table('channel_webhook_configs', function (Blueprint $table) {
+                $table->morphs('config');
+            });
+        }
     }
 };

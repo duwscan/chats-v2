@@ -7,7 +7,7 @@ use App\Models\ChannelWebhookConfig;
 
 class UpdateLineChannelAction
 {
-    public function __invoke(int $configId, array $data): ChannelWebhookConfig
+    public function execute(int $configId, array $data): ChannelWebhookConfig
     {
         $config = ChannelWebhookConfig::query()
             ->where('id', $configId)

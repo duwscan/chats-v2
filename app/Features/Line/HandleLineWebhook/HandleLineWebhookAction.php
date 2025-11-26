@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class HandleLineWebhookAction
 {
-    public function __invoke(int $userWebsiteId, int $configId, Request $request): array
+    public function execute(int $userWebsiteId, int $configId, Request $request): array
     {
         $config = ChannelWebhookConfig::query()
             ->where('user_website_id', $userWebsiteId)

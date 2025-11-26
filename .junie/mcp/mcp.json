@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/duwscan/Library/Application Support/Herd/bin/php84",
+            "args": [
+                "/Users/duwscan/work/chatweb-chat-service/chatweb-chat-service-v2/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

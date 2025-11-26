@@ -3,9 +3,7 @@
 namespace App\Features\Line\HandleLineWebhook;
 
 use App\Http\Controllers\ApiResponseTrait;
-use App\Features\Line\HandleLineWebhook\LineWebhookResultResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class HandleLineWebhookController
 {
@@ -15,7 +13,7 @@ class HandleLineWebhookController
         HandleLineWebhookRequest $request,
         HandleLineWebhookAction $action,
     ): JsonResponse {
-        $result = $action(
+        $result = $action->execute(
             $request->routeUserWebsiteId(),
             $request->routeConfigId(),
             $request,

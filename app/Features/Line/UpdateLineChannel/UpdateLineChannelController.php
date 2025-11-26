@@ -12,9 +12,9 @@ class UpdateLineChannelController
 
     public function __invoke(
         UpdateLineChannelConfigRequest $request,
-        UpdateLineChannelAction        $action,
+        UpdateLineChannelAction $action,
     ): JsonResponse {
-        $config = $action($request->routeConfigId(), $request->validated());
+        $config = $action->execute($request->routeConfigId(), $request->validated());
 
         return $this->responseSuccess(new LineChannelConfigResource($config));
     }
