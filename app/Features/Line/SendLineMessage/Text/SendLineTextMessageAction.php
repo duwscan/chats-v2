@@ -37,13 +37,18 @@ class SendLineTextMessageAction
                 throw new CustomException('Customer channel_user_id is missing.', 400);
             }
 
-            $config = ChannelWebhookConfig::query()
-                ->where('id', $data->configId)
-                ->where('channel', 'line')
-                ->first();
+            // Get LINE channel configuration from customer
+            $config = null;
+
+            if ($customer->channel_webhook_config_id) {
+                $config = ChannelWebhookConfig::query()
+                    ->where('id', $customer->channel_webhook_config_id)
+                    ->where('channel', 'line')
+                    ->first();
+            }
 
             if (! $config) {
-                throw new CustomException('LINE config not found.', 404);
+                throw new CustomException('LINE config not found for customer. config_id: '.($customer->channel_webhook_config_id ?? 'none').' or user_website_id: '.($customer->user_website_id ?? 'none'), 404);
             }
 
             $channelConfig = LineChannel::fromArray($config->config ?? []);
@@ -73,7 +78,7 @@ class SendLineTextMessageAction
                     'customer_id' => $customer->id,
                     'recipient_id' => $recipientId,
                     'message_text' => $data->text,
-                    'config_id' => $data->configId,
+                    'config_id' => $customer->channel_webhook_config_id,
                     'reply_token' => $data->replyToken,
                 ]);
             } else {
@@ -88,7 +93,7 @@ class SendLineTextMessageAction
                     'customer_id' => $customer->id,
                     'recipient_id' => $recipientId,
                     'message_text' => $data->text,
-                    'config_id' => $data->configId,
+                    'config_id' => $customer->channel_webhook_config_id,
                 ]);
             }
 

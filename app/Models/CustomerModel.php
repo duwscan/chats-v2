@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
  * @property int|null $parent_id
  * @property int|null $user_website_id
+ * @property int|null $channel_webhook_config_id
  * @property string|null $username
  * @property string|null $display_name
  * @property string|null $avatar_url
@@ -47,6 +49,7 @@ class CustomerModel extends Model
         'last_activity_at',
         'parent_id',
         'user_website_id',
+        'channel_webhook_config_id',
     ];
 
     protected function casts(): array
@@ -102,12 +105,12 @@ class CustomerModel extends Model
     }
 
     // Notification relationships
-    public function notifications()
+    public function notifications(): MorphMany
     {
         return $this->morphMany(NotificationModel::class, 'notifiable');
     }
 
-    public function notificationPreferences()
+    public function notificationPreferences(): MorphMany
     {
         return $this->morphMany(NotificationPreferenceModel::class, 'notifiable');
     }
@@ -129,5 +132,13 @@ class CustomerModel extends Model
     public function userWebsite(): BelongsTo
     {
         return $this->belongsTo(UserWebsite::class, 'user_website_id');
+    }
+
+    /**
+     * Get the channel webhook config associated with the customer.
+     */
+    public function channelWebhookConfig(): BelongsTo
+    {
+        return $this->belongsTo(ChannelWebhookConfig::class, 'channel_webhook_config_id');
     }
 }

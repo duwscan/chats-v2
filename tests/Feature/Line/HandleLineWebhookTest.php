@@ -74,6 +74,7 @@ class HandleLineWebhookTest extends TestCase
             'channel_user_id' => 'line-user-123',
             'user_website_id' => (string) $userWebsiteId,
             'display_name' => 'line-user-123', // Falls back to userId when profile fetch fails in test
+            'channel_webhook_config_id' => $config->id,
         ]);
 
         $conversation = ConversationModel::query()->first();

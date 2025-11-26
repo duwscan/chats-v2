@@ -29,30 +29,18 @@ class SendFacebookTextMessageAction
                 throw new RuntimeException('Customer channel_user_id is required to send Facebook message');
             }
 
-            // Get Facebook channel configuration
-            $channelWebhookConfig = null;
-
-            if ($message->configId) {
-                $channelWebhookConfig = ChannelWebhookConfig::query()
-                    ->where('id', $message->configId)
-                    ->where('channel', 'facebook')
-                    ->first();
-            } elseif ($message->userWebsiteId) {
-                $channelWebhookConfig = ChannelWebhookConfig::query()
-                    ->where('user_website_id', $message->userWebsiteId)
-                    ->where('channel', 'facebook')
-                    ->where('status', 'active')
-                    ->first();
-            } elseif ($customer->user_website_id) {
-                $channelWebhookConfig = ChannelWebhookConfig::query()
-                    ->where('user_website_id', $customer->user_website_id)
-                    ->where('channel', 'facebook')
-                    ->where('status', 'active')
-                    ->first();
+            // Get Facebook channel configuration from customer
+            if (! $customer->channel_webhook_config_id) {
+                throw new RuntimeException('Customer channel_webhook_config_id is required to send Facebook message');
             }
 
+            $channelWebhookConfig = ChannelWebhookConfig::query()
+                ->where('id', $customer->channel_webhook_config_id)
+                ->where('channel', 'facebook')
+                ->first();
+
             if (! $channelWebhookConfig) {
-                throw new RuntimeException('No Facebook channel configuration found for config_id: '.($message->configId ?? 'none').' or user_website_id: '.($message->userWebsiteId ?? $customer->user_website_id ?? 'none'));
+                throw new RuntimeException('Facebook channel configuration not found for customer. config_id: '.$customer->channel_webhook_config_id);
             }
 
             $facebookConfig = $channelWebhookConfig->config ?? [];
@@ -78,7 +66,7 @@ class SendFacebookTextMessageAction
                 Log::info('facebook.message.sent', [
                     'recipient_id' => $conversationId,
                     'message_length' => strlen($message->text),
-                    'config_id' => $message->configId,
+                    'config_id' => $customer->channel_webhook_config_id,
                     'customer_id' => $customer->id,
                 ]);
 

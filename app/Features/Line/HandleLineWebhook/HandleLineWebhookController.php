@@ -67,7 +67,7 @@ class HandleLineWebhookController extends Controller
                     'message_id' => $message->getId(),
                 ]);
 
-                $customer = $upsertLineCustomerAction->execute($event, $userWebsiteId, $channelConfig->getAccessToken());
+                $customer = $upsertLineCustomerAction->execute($event, $userWebsiteId, $channelConfig->getAccessToken(), $config);
                 $conversation = $upsertLineConversationAction->execute($customer);
 
                 if ($messageType === 'image') {
