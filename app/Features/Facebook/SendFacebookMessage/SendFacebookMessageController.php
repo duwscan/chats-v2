@@ -45,10 +45,10 @@ class SendFacebookMessageController
             throw new CustomException('Unsupported Facebook message type: '.$type, 400);
         }
 
-        return $this->responseSuccess([
-            'message' => 'Facebook message sent successfully',
-            'customer_id' => $customer->id,
-            'type' => $type,
-        ]);
+        return $this->responseSuccess(new SendFacebookMessageResultResource(
+            message: 'Facebook message sent successfully',
+            customerId: $customer->id,
+            type: $type,
+        ));
     }
 }

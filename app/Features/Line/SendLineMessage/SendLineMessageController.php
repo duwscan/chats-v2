@@ -45,10 +45,10 @@ class SendLineMessageController
             throw new CustomException('Unsupported LINE message type.', 400);
         }
 
-        return $this->responseSuccess([
-            'message' => 'LINE message sent successfully',
-            'customer_id' => $customer->id,
-            'type' => $type,
-        ]);
+        return $this->responseSuccess(new SendLineMessageResultResource(
+            message: 'LINE message sent successfully',
+            customerId: $customer->id,
+            type: $type,
+        ));
     }
 }
