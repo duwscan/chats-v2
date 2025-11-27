@@ -2,9 +2,12 @@
 
 namespace App\Features\Facebook\SendFacebookMessage\Text;
 
+use App\Features\Chat\Events\MessageSent;
 use App\Models\ChannelWebhookConfig;
+use App\Models\ConversationModel;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -72,7 +75,9 @@ class SendFacebookTextMessageAction
 
                 // Save the sent message to database if conversation_id provided
                 if ($message->conversationId) {
-                    MessageModel::query()->create([
+                    $conversation = ConversationModel::query()->find($message->conversationId);
+
+                    $savedMessage = MessageModel::query()->create([
                         'conversation_id' => $message->conversationId,
                         'customer_id' => null, // Message is from agent/AI, not customer
                         'agent_id' => $message->agentId,
@@ -87,6 +92,15 @@ class SendFacebookTextMessageAction
                             'sent_at' => now()->toIso8601String(),
                         ],
                     ]);
+
+                    if ($conversation) {
+                        Event::dispatch(new MessageSent(
+                            message: $savedMessage,
+                            conversation: $conversation,
+                            customer: $customer,
+                            channel: 'facebook',
+                        ));
+                    }
                 }
             } else {
                 Log::error('facebook.message.send_failed', [

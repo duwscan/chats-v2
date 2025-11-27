@@ -3,9 +3,11 @@
 namespace App\Features\Line\HandleLineWebhook\Actions;
 
 use App\Exceptions\CustomException;
+use App\Features\Chat\Events\MessageReceived;
 use App\Models\ConversationModel;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
+use Illuminate\Support\Facades\Event;
 use LINE\Webhook\Model\ImageMessageContent;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\TextMessageContent;
@@ -45,7 +47,7 @@ class CreateLineMessageAction
             'raw_message' => (array) $message->jsonSerialize(),
         ], fn ($value) => $value !== null);
 
-        return MessageModel::query()->create([
+        $savedMessage = MessageModel::query()->create([
             'conversation_id' => $conversation->id,
             'customer_id' => $customer->id,
             'message_text' => $messageText,
@@ -55,5 +57,14 @@ class CreateLineMessageAction
             'metadata' => $metadata,
             'thread_id' => $message->getId(),
         ]);
+
+        Event::dispatch(new MessageReceived(
+            message: $savedMessage,
+            conversation: $conversation,
+            customer: $customer,
+            channel: 'line',
+        ));
+
+        return $savedMessage;
     }
 }

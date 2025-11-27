@@ -2,10 +2,12 @@
 
 namespace App\Features\Facebook\HandleWebhook\Actions;
 
+use App\Features\Chat\Events\MessageReceived;
 use App\Features\Facebook\HandleWebhook\FacebookWebhookMessage;
 use App\Models\ConversationModel;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
+use Illuminate\Support\Facades\Event;
 use RuntimeException;
 
 class CreateFacebookMessageAction
@@ -35,6 +37,17 @@ class CreateFacebookMessageAction
             $data['customer_id'] = $customer->id;
         }
 
-        return MessageModel::query()->create($data);
+        $savedMessage = MessageModel::query()->create($data);
+
+        if (! $message->isPageEcho) {
+            Event::dispatch(new MessageReceived(
+                message: $savedMessage,
+                conversation: $conversation,
+                customer: $customer,
+                channel: 'facebook',
+            ));
+        }
+
+        return $savedMessage;
     }
 }

@@ -3,10 +3,13 @@
 namespace App\Features\Line\SendLineMessage\Text;
 
 use App\Exceptions\CustomException;
+use App\Features\Chat\Events\MessageSent;
 use App\Features\Line\LineChannel;
 use App\Models\ChannelWebhookConfig;
+use App\Models\ConversationModel;
 use App\Models\CustomerModel;
 use App\Models\MessageModel;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\ApiException;
@@ -98,7 +101,9 @@ class SendLineTextMessageAction
             }
 
             if ($data->conversationId !== null) {
-                MessageModel::query()->create([
+                $conversation = ConversationModel::query()->find($data->conversationId);
+
+                $savedMessage = MessageModel::query()->create([
                     'conversation_id' => $data->conversationId,
                     'customer_id' => $customer->id,
                     'agent_id' => $data->agentId,
@@ -114,6 +119,15 @@ class SendLineTextMessageAction
                         'reply_token_used' => ! empty($data->replyToken),
                     ],
                 ]);
+
+                if ($conversation) {
+                    Event::dispatch(new MessageSent(
+                        message: $savedMessage,
+                        conversation: $conversation,
+                        customer: $customer,
+                        channel: 'line',
+                    ));
+                }
             }
         } catch (ApiException $e) {
             Log::error('line.api_error', [
